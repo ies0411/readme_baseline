@@ -39,13 +39,13 @@ MARKDOWN 정리, 실습 for README.md
 # 8. 링크 달기
 (1) 인라인 링크  
 
-[블로그 주소](https://lsh424.tistory.com/)
+[블로그 주소](https://roboticsoo.shop)
 
 (2) 참조 링크  
 
 [블로그 주소][blog]
 
-[blog]: https://lsh424.tistory.com/
+[blog]: https://jaehoon-daddy.tistory.com/
 
 # 9. 이미지 추가하기
 ![이탈리아 포지타노](https://user-images.githubusercontent.com/31477658/85016059-f962aa80-b1a3-11ea-8c91-dacba2666b78.jpeg)
