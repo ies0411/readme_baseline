@@ -442,3 +442,101 @@ We use [Vercel](https://vercel.com/docs) to deploy [our project](https://vercel.
 - [Thinking in GraphQL](https://relay.dev/docs/principles-and-architecture/thinking-in-graphql/)
 - [Thinking in Relay](https://relay.dev/docs/principles-and-architecture/thinking-in-relay/)
 - [React Design Principals](https://reactjs.org/docs/design-principles.html)
+
+
+<!-- <div align="center">
+  <img src="resources/mmdet3d-logo.png" width="600"/>
+  <div>&nbsp;</div>
+  <div align="center">
+    <b><font size="5">OpenMMLab website</font></b>
+    <sup>
+      <a href="https://openmmlab.com">
+        <i><font size="4">HOT</font></i>
+      </a>
+    </sup>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <b><font size="5">OpenMMLab platform</font></b>
+    <sup>
+      <a href="https://platform.openmmlab.com">
+        <i><font size="4">TRY IT OUT</font></i>
+      </a>
+    </sup>
+  </div>
+  <div>&nbsp;</div>
+</div> -->
+
+
+<!-- --- -->
+
+## Install
+
+- set env
+```
+$ docker build -t mmdetection3d -f docker/Dockerfile .
+```
+
+## Set Data
+
+### 1. Kitti Data
+Download KITTI 3D detection data [Here](http://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=3d). Prepare KITTI data splits by running
+```
+mkdir ./data/kitti/ && mkdir ./data/kitti/ImageSets
+
+# Download data split
+wget -c  https://raw.githubusercontent.com/traveller59/second.pytorch/master/second/data/ImageSets/test.txt --no-check-certificate --content-disposition -O ./data/kitti/ImageSets/test.txt
+wget -c  https://raw.githubusercontent.com/traveller59/second.pytorch/master/second/data/ImageSets/train.txt --no-check-certificate --content-disposition -O ./data/kitti/ImageSets/train.txt
+wget -c  https://raw.githubusercontent.com/traveller59/second.pytorch/master/second/data/ImageSets/val.txt --no-check-certificate --content-disposition -O ./data/kitti/ImageSets/val.txt
+wget -c  https://raw.githubusercontent.com/traveller59/second.pytorch/master/second/data/ImageSets/trainval.txt --no-check-certificate --content-disposition -O ./data/kitti/ImageSets/trainval.txt
+```
+Generate info file
+```
+python tools/create_data.py kitti --root-path ./data/kitti --out-dir ./data/kitti --extra-tag kitti
+```
+### 2. Suite Data
+- Convert Suite to Kitti Data Format
+
+  reference  : custom_data.ipynb in https://github.com/Superb-AI-Suite/voda.git
+  
+  [TODO] Make a script to download asset / label from suite project with login information.
+
+- Debug : Kitti_GT_3Dbbox_visualization.ipynb in https://github.com/Superb-AI-Suite/voda.git
+
+- Generate info file
+```
+python tools/create_data.py kitti --root-path ./data/superb --out-dir ./data/superb --extra-tag kitti
+```
+
+## Demo
+### 1. kitti
+```
+python tool/train.py configs/configs/parta2/hv_PartA2_secfpn_2x8_cyclic_80e_kitti-3d-car.py
+```
+
+### 2. Suite
+```
+python tool/train.py configs/configs/superb/custom.py
+```
+or Using **train_demo.ipnb**
+
+## Main Config
+- reference : **/config/superb/custom.py**
+- dataset_type : select in [Kitti, cityspace, waymo, nuscenes], Our code based on Kitti
+- data_root = 'data/superb/', custom data(suite -> kitti)
+- point_cloud_range : velodyne coordinates, x, y, z
+- input_modality : use_lidar=True, use_camera=False
+- resume_from : load pretrained model
+- checkpoint_config = set interval of saving  checkpoint and path
+
+  ex) dict(interval=3, out_dir='/home/eunsoo/dl/mmdetection3d/checkpoints/')
+
+- evaluation : set evalutation metric
+
+  ex)  cfg.evaluation.metric = ['bbox', 'segm']
+
+- learning rate, batch size
+
+  ex)  cfg.optimizer = dict(type='SGD', lr=0.0025, momentum=0.9, weight_decay=0.0001)
+
+**Error Situation**
+1. Nothing PCD in BBox bbox
+2. Out of range when appling data augmentation
